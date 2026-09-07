@@ -1,7 +1,7 @@
 {
-  "name": "Etas2MF",
+  "name": "aprende-matrices",
   "version": "1.0.0",
-  "description": "",
+  "description": "Curso gratuito de matrices para 2MF Arroyo Seco",
   "main": "index.js",
   "scripts": {
     "dev": "astro dev",
