@@ -3,5 +3,6 @@ dist/
 .astro/
 .vercel/
 imagenes/
+*.tex
 *.log
 .DS_Store
