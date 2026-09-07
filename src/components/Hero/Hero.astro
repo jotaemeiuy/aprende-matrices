@@ -1,0 +1,70 @@
+---
+import HeroBadge from "./HeroBadge.astro";
+import Icon from "../icons/Icon.astro";
+import { modules } from "../../data/modules.ts";
+import type { ContinueModule } from "../../lib/progress.ts";
+
+const lessons = modules.flatMap((m) => m.lessons);
+const totalLessons = lessons.length;
+const practiceCount = lessons.filter((l) => l.kind === "practica").length;
+const continueIndex: ContinueModule[] = modules.map((m) => ({
+  id: m.id,
+  title: m.title,
+  lessons: m.lessons.map((l) => ({ slug: l.slug, title: l.title })),
+}));
+const continuePayload: string = JSON.stringify(continueIndex);
+---
+<section class="mx-auto max-w-4xl px-4 pb-10 pt-16 text-center sm:pt-20" aria-labelledby="hero-title">
+  <h1 id="hero-title" class="text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
+    Aprende Matrices
+    <span class="mt-1 block text-amber-400">desde cero.</span>
+  </h1>
+  <p class="mx-auto mt-5 max-w-2xl text-base text-zinc-400 sm:text-lg">
+    Material para 2MF Arroyo Seco · Prof. Javier Martín.
+  </p>
+  <ul class="mt-7 flex flex-wrap items-center justify-center gap-2.5" aria-label="Características del curso">
+    <HeroBadge icon="bolt" text={`${totalLessons} lecciones`} />
+    <HeroBadge icon="code" text={`${practiceCount} prácticas`} />
+    <HeroBadge icon="shield" text="100% Gratuito" />
+  </ul>
+  <p class="mt-6">
+    <a
+      data-continue-link
+      href="/"
+      data-astro-prefetch
+      class="hidden items-center justify-center gap-1.5 text-sm font-semibold text-amber-300 hover:text-amber-200"
+    >
+      Continuar donde quedé: <span data-continue-title></span>
+      <Icon name="chevron" class="h-4 w-4" />
+    </a>
+  </p>
+</section>
+
+<script type="application/json" data-continue-index is:inline set:html={continuePayload}></script>
+
+<script>
+  import { loadProgress } from "../../lib/progress.ts";
+  import type { ContinueModule } from "../../lib/progress.ts";
+
+  function initContinue(): void {
+    const indexEl = document.querySelector("[data-continue-index]");
+    const index = JSON.parse(indexEl?.textContent ?? "[]") as ContinueModule[];
+    const link = document.querySelector("[data-continue-link]");
+    if (!(link instanceof HTMLAnchorElement)) return;
+    const last = loadProgress().last;
+    if (!last) return;
+    const [moduleId, ...slugParts] = last.key.split("/");
+    const slug = slugParts.join("/");
+    const mod = index.find((m) => m.id === moduleId);
+    const lesson = mod?.lessons.find((l) => l.slug === slug);
+    if (!mod || !lesson || !moduleId) return;
+    link.href = `/clase/${moduleId}/${slug}`;
+    const titleEl = link.querySelector("[data-continue-title]");
+    if (titleEl) titleEl.textContent = lesson.title;
+    link.classList.remove("hidden");
+    link.classList.add("inline-flex");
+  }
+
+  initContinue();
+  document.addEventListener("astro:page-load", initContinue);
+</script>

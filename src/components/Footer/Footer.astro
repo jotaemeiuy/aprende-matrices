@@ -1,0 +1,81 @@
+---
+import Icon from "../icons/Icon.astro";
+---
+<footer class="border-t border-white/10">
+  <div
+    class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4 py-6 text-sm text-zinc-500 sm:flex-row sm:gap-4"
+  >
+    <button
+      type="button"
+      data-share
+      class="inline-flex items-center gap-1.5 hover:text-white"
+    >
+      <Icon name="share" class="h-4 w-4" />
+      Compartir
+    </button>
+    <span
+      data-share-feedback
+      role="status"
+      class="hidden text-xs text-emerald-300"
+    >
+      ¡Enlace copiado!
+    </span>
+    <span aria-hidden="true" class="hidden text-zinc-700 sm:inline">·</span>
+    <p>
+      Hecho con
+      <Icon name="heart" class="inline h-3.5 w-3.5 text-red-500" />
+      por <span class="text-zinc-300">Prof. Javier Martín · 2MF Arroyo Seco</span>
+    </p>
+  </div>
+</footer>
+
+<script>
+  let shareBtn: Element | null = null;
+  let shareFeedback: Element | null = null;
+  let timer: number | undefined;
+
+  function showFeedback(): void {
+    if (!(shareFeedback instanceof HTMLElement)) return;
+    shareFeedback.classList.remove("hidden");
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      if (shareFeedback instanceof HTMLElement) {
+        shareFeedback.classList.add("hidden");
+      }
+    }, 2000);
+  }
+
+  async function share(): Promise<void> {
+    const url = window.location.href;
+    const title = document.title;
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title, url });
+      } catch {
+        // El usuario canceló: no hacer nada.
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      showFeedback();
+    } catch {
+      window.prompt("Copiá el enlace:", url);
+    }
+  }
+
+  function initShare(): void {
+    shareBtn = document.querySelector("[data-share]");
+    shareFeedback = document.querySelector("[data-share-feedback]");
+    if (!(shareBtn instanceof HTMLElement) || shareBtn.dataset.wired === "1") {
+      return;
+    }
+    shareBtn.dataset.wired = "1";
+    shareBtn.addEventListener("click", (): void => {
+      void share();
+    });
+  }
+
+  initShare();
+  document.addEventListener("astro:page-load", initShare);
+</script>

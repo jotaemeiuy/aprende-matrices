@@ -1,0 +1,30 @@
+---
+import Icon from "../icons/Icon.astro";
+
+interface Props {
+  moduleId: string;
+  slug: string;
+  title: string;
+  kind: "teoria" | "practica";
+}
+
+const { moduleId, slug, title, kind } = Astro.props as Props;
+---
+<li>
+  <a
+    id={`${moduleId}-${slug}`}
+    href={`/clase/${moduleId}/${slug}`}
+    data-astro-prefetch
+    class="group flex items-center gap-1.5 rounded px-1 py-1 text-[15px] text-zinc-400 hover:text-white"
+  >
+    <Icon name="chevron" class="h-3.5 w-3.5 shrink-0 text-zinc-600 group-hover:text-amber-400" />
+    <span>{title}</span>
+    {
+      kind === "practica" && (
+        <span class="shrink-0 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-px text-[11px] font-semibold uppercase tracking-wide text-amber-300">
+          Práctica
+        </span>
+      )
+    }
+  </a>
+</li>

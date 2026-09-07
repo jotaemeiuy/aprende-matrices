@@ -1,0 +1,26 @@
+---
+import Icon from "../icons/Icon.astro";
+import SearchDialog from "./SearchDialog.astro";
+---
+<header class="sticky top-0 z-40 border-b border-white/10 bg-[#0a0a10]/90 backdrop-blur">
+  <div class="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
+    <a href="/" class="flex items-center gap-2" aria-label="Aprende Matrices - inicio">
+      <span class="flex h-7 w-7 items-center justify-center rounded bg-amber-400 text-black">
+        <Icon name="logo" class="h-5 w-5" />
+      </span>
+      <span class="text-sm font-semibold text-white">Aprende Matrices</span>
+    </a>
+    <div class="flex flex-1 justify-center px-2">
+      <SearchDialog />
+    </div>
+    <nav class="flex items-center gap-2" aria-label="Acciones">
+      <a
+        href="mailto:prof.javier.martin@gmail.com?subject=Aprende%20Matrices"
+        class="hidden items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm text-zinc-400 hover:text-white sm:inline-flex"
+      >
+        <Icon name="mail" class="h-4 w-4" />
+        Contacto
+      </a>
+    </nav>
+  </div>
+</header>

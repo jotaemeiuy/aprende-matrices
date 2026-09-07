@@ -1,0 +1,47 @@
+---
+import { getCollection, render } from "astro:content";
+import LessonLayout from "../../../layouts/LessonLayout.astro";
+import { modules } from "../../../data/modules.ts";
+
+export async function getStaticPaths() {
+  const lessons = await getCollection("lessons");
+  return lessons.map((entry) => ({
+    params: { module: entry.data.module, slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const modulePosition = new Map(modules.map((m, i) => [m.id, i]));
+const ordered = (await getCollection("lessons")).sort((a, b) => {
+  const moduleOrder =
+    (modulePosition.get(a.data.module) ?? Number.MAX_SAFE_INTEGER) -
+    (modulePosition.get(b.data.module) ?? Number.MAX_SAFE_INTEGER);
+  return moduleOrder !== 0 ? moduleOrder : a.data.order - b.data.order;
+});
+const idx = ordered.findIndex(
+  (e) => e.data.module === entry.data.module && e.data.slug === entry.data.slug,
+);
+const prevEntry = idx > 0 ? ordered[idx - 1] : undefined;
+const nextEntry =
+  idx >= 0 && idx < ordered.length - 1 ? ordered[idx + 1] : undefined;
+
+const toLink = (e: { data: { title: string; module: string; slug: string } }) => ({
+  title: e.data.title,
+  href: `/clase/${e.data.module}/${e.data.slug}`,
+});
+---
+
+<LessonLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  moduleId={entry.data.module}
+  lessonSlug={entry.data.slug}
+  kind={entry.data.kind}
+  prev={prevEntry ? toLink(prevEntry) : undefined}
+  next={nextEntry ? toLink(nextEntry) : undefined}
+>
+  <Content />
+</LessonLayout>

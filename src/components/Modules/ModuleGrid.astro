@@ -1,0 +1,43 @@
+---
+import ModuleCard from "./ModuleCard.astro";
+import { modules } from "../../data/modules.ts";
+import type { ModuleSlugs } from "../../lib/progress.ts";
+
+const index: ModuleSlugs = Object.fromEntries(
+  modules.map((m) => [m.id, m.lessons.map((l) => l.slug)]),
+);
+const payload: string = JSON.stringify(index);
+---
+<section class="mx-auto max-w-6xl px-4 pb-20" aria-label="Temario">
+  <div class="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+    {modules.map((mod) => <ModuleCard module={mod} />)}
+  </div>
+</section>
+
+<script type="application/json" data-progress-index is:inline set:html={payload}></script>
+
+<script>
+  import { loadProgress, modulePercent } from "../../lib/progress.ts";
+  import type { ModuleSlugs } from "../../lib/progress.ts";
+
+  function initModuleBars(): void {
+    const indexEl = document.querySelector("[data-progress-index]");
+    const index = JSON.parse(indexEl?.textContent ?? "{}") as ModuleSlugs;
+    const state = loadProgress();
+    const cards = document.querySelectorAll("[data-module-progress]");
+    cards.forEach((card) => {
+      if (!(card instanceof HTMLElement)) return;
+      const moduleId = card.dataset.moduleProgress ?? "";
+      const slugs = index[moduleId] ?? [];
+      const pct = modulePercent(state.visited, moduleId, slugs);
+      const fill = card.querySelector("[data-module-fill]");
+      const pctEl = card.querySelector("[data-module-pct]");
+      if (fill instanceof HTMLElement) fill.style.width = `${pct}%`;
+      if (pctEl) pctEl.textContent = `${pct}%`;
+      card.setAttribute("aria-valuenow", String(pct));
+    });
+  }
+
+  initModuleBars();
+  document.addEventListener("astro:page-load", initModuleBars);
+</script>

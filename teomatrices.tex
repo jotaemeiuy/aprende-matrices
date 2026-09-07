@@ -1,0 +1,864 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{enumitem}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{titlesec}
+\usepackage[hidelinks,colorlinks=true,linkcolor=NavyBlue,urlcolor=NavyBlue,citecolor=NavyBlue]{hyperref}
+
+\theoremstyle{definition}
+\newtheorem{definicion}{Definición}[section]
+\newtheorem{ejemplo}{Ejemplo}[section]
+\newtheorem{propiedad}{Propiedad}[section]
+\newtheorem{observacion}{Observación}[section]
+
+% --- Cajas visuales UTU (legibles en color y B/N) ---
+\tcolorboxenvironment{definicion}{%
+  enhanced, breakable, colback=NavyBlue!6, colframe=NavyBlue,
+  boxrule=1.2pt, arc=3mm, left=3mm, right=3mm, top=2mm, bottom=2mm,
+  coltitle=white, fonttitle=\bfseries,
+  borderline west={3pt}{0pt}{NavyBlue!80!black}%
+}
+\tcolorboxenvironment{ejemplo}{%
+  enhanced, breakable, colback=ForestGreen!5, colframe=ForestGreen!70!black,
+  boxrule=1pt, arc=3mm, left=3mm, right=3mm, top=2mm, bottom=2mm,
+  borderline west={3pt}{0pt}{ForestGreen!80!black}%
+}
+\tcolorboxenvironment{propiedad}{%
+  enhanced, breakable, colback=BurntOrange!7, colframe=BurntOrange!80!black,
+  boxrule=1pt, arc=3mm, left=3mm, right=3mm, top=2mm, bottom=2mm,
+  borderline west={3pt}{0pt}{BurntOrange!90!black}%
+}
+\tcolorboxenvironment{observacion}{%
+  enhanced, breakable, colback=Goldenrod!10, colframe=Goldenrod!70!black,
+  boxrule=1pt, arc=3mm, left=3mm, right=3mm, top=2mm, bottom=2mm,
+  borderline west={4pt}{0pt}{Goldenrod!80!black}%
+}
+
+% --- Secciones en azul UTU ---
+\titleformat{\section}{\Large\bfseries\color{NavyBlue}}{ \thesection}{1em}{}[\vspace{1mm}\color{NavyBlue}\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{MidnightBlue}}{ \thesubsection}{1em}{}
+
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{tcolorbox}[enhanced, colback=NavyBlue, colframe=NavyBlue!80!black,
+  arc=4mm, boxrule=1pt, left=4mm, right=4mm, top=3mm, bottom=3mm,
+  halign=center]
+{\Large\bfseries\color{white} Matrices 2MF Arroyo Seco}\\[1mm]
+{\color{white!90!} Prof.\ Javier Mart\'in}
+\end{tcolorbox}
+
+%=====================================================
+\section{Concepto de matriz}
+%=====================================================
+\begin{definicion}
+Una \textbf{matriz} de orden $m \times n$ (se lee ``$m$ por $n$'') es un arreglo rectangular de números con $m$ filas y $n$ columnas:
+\(
+A = (a_{ij})_{m \times n} =
+\begin{pmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{m1} & a_{m2} & \cdots & a_{mn}
+\end{pmatrix}
+\)
+donde $a_{ij}$ es el elemento de la fila $i$ y columna $j$.
+\end{definicion}
+
+\begin{observacion}
+En programación una matriz $m \times n$ es una tabla, una grilla de píxeles, o un arreglo bidimensional \texttt{A[m][n]}. La fila $i$ suele ser un ``registro'' y la columna $j$ una ``característica'' (feature).
+\end{observacion}
+
+\subsection{Matriz fila ($m=1$)}
+\begin{definicion}
+Es de orden $1 \times n$: una sola fila.
+\end{definicion}
+
+\begin{ejemplo}
+$F = \begin{pmatrix} 8 & 7 & 9 \end{pmatrix}_{1 \times 3}$: notas de un estudiante en 3 materias. En Python sería la lista \texttt{[8,7,9]}.
+\end{ejemplo}
+
+\begin{ejemplo}
+$E = \begin{pmatrix} 0 & 1 & 1 & 0 \end{pmatrix}_{1 \times 4}$: estado de 4 interruptores o nivel de un juego.
+\end{ejemplo}
+
+\subsection{Matriz columna ($n=1$)}
+\begin{definicion}
+Es de orden $m \times 1$: una sola columna.
+\end{definicion}
+
+\begin{ejemplo}
+$C = \begin{pmatrix} 255 \\ 128 \\ 0 \end{pmatrix}_{3 \times 1}$: color RGB naranja (rojo $=255$, verde $=128$, azul $=0$).
+\end{ejemplo}
+
+\begin{ejemplo}
+$P = \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 3 \\ -2 \end{pmatrix}_{2 \times 1}$: punto o vector en el plano, muy usado en gráficos por computadora.
+\end{ejemplo}
+
+\subsection{Matriz rectangular ($m \neq n$)}
+\begin{definicion}
+Tiene distinto número de filas y columnas.
+\end{definicion}
+
+\begin{ejemplo}
+\[
+A = \begin{pmatrix}
+5 & 7 & 3 & 9 \\
+8 & 6 & 4 & 2 \\
+1 & 0 & 5 & 7
+\end{pmatrix}_{3 \times 4}
+\]
+Tabla con 3 usuarios (filas) y 4 películas (columnas): puntajes del 0 al 9. Es el típico \textit{dataset}: filas $=$ casos, columnas $=$ variables.
+\end{ejemplo}
+
+\begin{ejemplo}
+\[
+B = \begin{pmatrix}
+1 & 2 \\
+3 & 4 \\
+5 & 6
+\end{pmatrix}_{3 \times 2}
+\]
+3 puntos en 2D guardados como filas: $(1,2)$, $(3,4)$, $(5,6)$.
+\end{ejemplo}
+
+\subsection{Matriz cuadrada ($m=n$)}
+\begin{definicion}
+Tiene igual número de filas y columnas. Es de orden $n$ (o $n \times n$). Su \textbf{diagonal principal} son los $a_{ii}$.
+\end{definicion}
+
+\begin{ejemplo}
+\[
+C = \begin{pmatrix}
+4 & 1 \\
+2 & 3
+\end{pmatrix}_{2 \times 2}
+\]
+Diagonal principal: $4$ y $3$.
+\end{ejemplo}
+
+\begin{ejemplo}[Grafo y matriz de adyacencia]
+\[
+G = \begin{pmatrix}
+0 & 1 & 1 \\
+1 & 0 & 0 \\
+1 & 0 & 0
+\end{pmatrix}_{3 \times 3}
+\]
+Grafo de 3 nodos (por ejemplo 3 computadoras en red): $1$ si hay conexión, $0$ si no. Las matrices cuadradas $0/1$ describen redes, mapas y autómatas.
+\end{ejemplo}
+
+\begin{ejemplo}[Imagen en escala de grises]
+\[
+I = \begin{pmatrix}
+0 & 128 & 255 \\
+64 & 192 & 32 \\
+255 & 0 & 100
+\end{pmatrix}_{3 \times 3}
+\]
+Cada número es un píxel de $0$ (negro) a $255$ (blanco). Toda imagen es una matriz.
+\end{ejemplo}
+
+%=====================================================
+\section{Matriz nula e identidad}
+%=====================================================
+\begin{definicion}
+La \textbf{matriz nula} $O_{m \times n}$ tiene todos sus elementos iguales a $0$.
+\end{definicion}
+
+\begin{ejemplo}
+$O_{2 \times 2} = \begin{pmatrix} 0 & 0 \\ 0 & 0 \end{pmatrix}$ y $O_{2 \times 3} = \begin{pmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Programación]
+Una imagen $2 \times 3$ toda negra es la matriz nula. Inicializar un acumulador en cero es crear $O$.
+\end{ejemplo}
+
+\begin{definicion}
+La \textbf{matriz identidad} $I_n$ es cuadrada de orden $n$, con $1$ en la diagonal principal y $0$ fuera:
+\[
+I_n = \begin{pmatrix}
+1 & 0 & \cdots & 0 \\
+0 & 1 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & 1
+\end{pmatrix}, \quad a_{ij} = \begin{cases} 1 & i=j \\ 0 & i \neq j \end{cases}
+\]
+\end{definicion}
+
+\begin{ejemplo}
+$I_2 = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}$, \quad $I_3 = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Programación]
+$I_n$ es el ``no hacer nada'': en gráficos $I_2$ deja un punto igual, en código es como multiplicar por $1$. En NumPy: \texttt{np.eye(3)}.
+\end{ejemplo}
+
+\newpage
+
+%=====================================================
+\section{Matrices triangulares}
+%=====================================================
+\begin{definicion}
+$A$ cuadrada es \textbf{triangular superior} si todos los elementos debajo de la diagonal son cero: $a_{ij}=0$ si $i>j$.
+\end{definicion}
+
+\begin{definicion}
+$A$ cuadrada es \textbf{triangular inferior} si todos los elementos sobre la diagonal son cero: $a_{ij}=0$ si $i<j$.
+\end{definicion}
+
+\begin{ejemplo}[Superior]
+\[
+S = \begin{pmatrix}
+2 & 5 & 1 \\
+0 & 3 & 4 \\
+0 & 0 & 6
+\end{pmatrix}
+\]
+Todo lo que está debajo de la diagonal es $0$.
+\end{ejemplo}
+
+\begin{ejemplo}[Superior, costos acumulados]
+\[
+\begin{pmatrix}
+1 & 2 & 3 \\
+0 & 1 & 4 \\
+0 & 0 & 1
+\end{pmatrix}
+\]
+Aparece al resolver sistemas por eliminación: los ceros indican que ya se eliminaron variables.
+\end{ejemplo}
+
+\begin{ejemplo}[Inferior]
+\[
+L = \begin{pmatrix}
+1 & 0 & 0 \\
+2 & 5 & 0 \\
+3 & -1 & 4
+\end{pmatrix}
+\]
+Todo lo que está sobre la diagonal es $0$.
+\end{ejemplo}
+
+\begin{ejemplo}[Inferior, dependencias]
+Si el módulo $2$ depende del $1$ y el $3$ depende de los anteriores, la matriz de dependencias es triangular inferior: no hay dependencias ``hacia adelante''.
+\end{ejemplo}
+
+\begin{observacion}
+Si es triangular superior e inferior a la vez, es \textbf{diagonal} (solo la diagonal puede ser no nula).
+\end{observacion}
+
+\newpage
+
+%=====================================================
+\section{Traza de una matriz}
+%=====================================================
+\begin{definicion}
+Si $A$ es cuadrada de orden $n$, su \textbf{traza} es la suma de la diagonal principal:
+\[
+\operatorname{tr}(A) = a_{11}+a_{22}+\cdots+a_{nn} = \sum_{i=1}^{n} a_{ii}.
+\]
+\end{definicion}
+
+\begin{ejemplo}
+Si $A = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}$, entonces $\operatorname{tr}(A)=4+3=7$.
+\end{ejemplo}
+
+\begin{ejemplo}
+Si $B = \begin{pmatrix} 1 & 0 & 2 \\ 5 & -1 & 3 \\ 0 & 4 & 6 \end{pmatrix}$, entonces $\operatorname{tr}(B)=1+(-1)+6=6$.
+\end{ejemplo}
+
+\begin{ejemplo}[Matriz de confusión]
+\[
+\begin{pmatrix}
+50 & 2 & 1 \\
+3 & 45 & 5 \\
+0 & 4 & 60
+\end{pmatrix}
+\]
+En clasificación, la diagonal son los aciertos. $\operatorname{tr}=50+45+60=155$ es el total de aciertos.
+\end{ejemplo}
+
+\begin{ejemplo}[Grafo]
+En una matriz de adyacencia, $\operatorname{tr}(G)$ cuenta los bucles (nodos conectados consigo mismos). Si $\operatorname{tr}(G)=0$, no hay bucles.
+\end{ejemplo}
+
+%=====================================================
+\section{Operaciones con matrices}
+%=====================================================
+
+\subsection{Igualdad de matrices}
+\begin{definicion}
+$A=B$ si tienen el mismo orden y $a_{ij}=b_{ij}$ para todo $i,j$.
+\end{definicion}
+
+\begin{ejemplo}
+$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} = \begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$, pero $\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} \neq \begin{pmatrix} 1 & 2 & 0 \\ 3 & 4 & 0 \end{pmatrix}$ (distinto orden).
+\end{ejemplo}
+
+\begin{ejemplo}[Hallar parámetros]
+\[
+\begin{pmatrix} x & 2 \\ 3 & y \end{pmatrix} = \begin{pmatrix} 1 & 2 \\ 3 & 5 \end{pmatrix} \Rightarrow x=1,\; y=5.
+\]
+Es como comparar dos tablas o dos imágenes píxel a píxel en un test.
+\end{ejemplo}
+
+\begin{ejemplo}
+\[
+\begin{pmatrix} a+1 & 0 \\ 0 & 4 \end{pmatrix} = \begin{pmatrix} 3 & 0 \\ 0 & b-1 \end{pmatrix} \Rightarrow a=2,\; b=5.
+\]
+\end{ejemplo}
+
+\subsection{Suma de matrices}
+\begin{definicion}
+Si $A$ y $B$ tienen el mismo orden $m \times n$, $C=A+B$ tiene $c_{ij}=a_{ij}+b_{ij}$.
+\end{definicion}
+
+\begin{ejemplo}
+\[
+\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} + \begin{pmatrix} 5 & 0 \\ -1 & 2 \end{pmatrix} = \begin{pmatrix} 6 & 2 \\ 2 & 6 \end{pmatrix}.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[Imágenes]
+Sumar dos matrices $2 \times 2$ de grises superpone el brillo:
+\[
+\begin{pmatrix} 10 & 20 \\ 30 & 40 \end{pmatrix} + \begin{pmatrix} 5 & 5 \\ 5 & 5 \end{pmatrix} = \begin{pmatrix} 15 & 25 \\ 35 & 45 \end{pmatrix}.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[Puntajes]
+\[
+\begin{pmatrix} 7 & 8 & 9 \\ 6 & 5 & 7 \end{pmatrix} + \begin{pmatrix} 1 & 0 & 1 \\ 2 & 3 & 0 \end{pmatrix} = \begin{pmatrix} 8 & 8 & 10 \\ 8 & 8 & 7 \end{pmatrix}.
+\]
+Dos parciales sumados por alumno y materia.
+\end{ejemplo}
+
+\subsection{Producto de un escalar por una matriz}
+\begin{definicion}
+Si $k$ es un número y $A=(a_{ij})$, entonces $kA=(k \cdot a_{ij})$: se multiplica cada elemento por $k$.
+\end{definicion}
+
+\begin{ejemplo}
+$2 \cdot \begin{pmatrix} 1 & -2 \\ 0 & 3 \end{pmatrix} = \begin{pmatrix} 2 & -4 \\ 0 & 6 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{ejemplo}
+$(-1) \cdot \begin{pmatrix} 4 & 1 \\ -3 & 2 \end{pmatrix} = \begin{pmatrix} -4 & -1 \\ 3 & -2 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Brillo y normalización]
+\[
+2 \cdot \begin{pmatrix} 10 & 20 \\ 30 & 40 \end{pmatrix} = \begin{pmatrix} 20 & 40 \\ 60 & 80 \end{pmatrix} \quad \text{(duplica el brillo).}
+\]
+\[
+\frac{1}{255}\begin{pmatrix} 255 & 128 \\ 0 & 64 \end{pmatrix} = \begin{pmatrix} 1 & 0{,}50 \\ 0 & 0{,}25 \end{pmatrix} \quad \text{(pasa de 0--255 a 0--1).}
+\]
+\end{ejemplo}
+
+\subsection{Producto de una matriz fila por una columna}
+\begin{definicion}
+Una fila $F_{1 \times n} = \begin{pmatrix} a_1 & \cdots & a_n \end{pmatrix}$ por una columna $C_{n \times 1} = \begin{pmatrix} b_1 \\ \vdots \\ b_n \end{pmatrix}$ da una matriz $1 \times 1$, es decir un número:
+\[
+F \cdot C = a_1b_1+a_2b_2+\cdots+a_nb_n = \sum_{k=1}^{n} a_kb_k.
+\]
+Es necesario que ambas tengan la misma cantidad $n$ de elementos.
+\end{definicion}
+
+\begin{ejemplo}
+\[
+\begin{pmatrix} 1 & 2 & 3 \end{pmatrix} \begin{pmatrix} 4 \\ 5 \\ 6 \end{pmatrix} = 1\cdot 4+2\cdot 5+3\cdot 6 = 4+10+18 = 32.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[Notas ponderadas]
+\[
+\begin{pmatrix} 7 & 8 & 9 \end{pmatrix} \begin{pmatrix} 0{,}3 \\ 0{,}3 \\ 0{,}4 \end{pmatrix} = 7\cdot 0{,}3+8\cdot 0{,}3+9\cdot 0{,}4 = 2{,}1+2{,}4+3{,}6 = 8{,}1.
+\]
+Fila de notas por columna de pesos: promedio ponderado. Así se calcula un puntaje en código.
+\end{ejemplo}
+
+\begin{ejemplo}[Producto punto]
+\[
+\begin{pmatrix} 2 & -1 & 4 \end{pmatrix} \begin{pmatrix} 3 \\ 0 \\ -2 \end{pmatrix} = 6+0-8 = -2.
+\]
+Es el producto escalar o punto de vectores, base de similitud, proyecciones y neuronas ($w \cdot x$).
+\end{ejemplo}
+
+\begin{ejemplo}[Incompatible]
+$\begin{pmatrix} 1 & 2 \end{pmatrix}_{1 \times 2}$ por $\begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix}_{3 \times 1}$ no se puede: $2 \neq 3$.
+\end{ejemplo}
+
+\subsection{Producto de dos matrices}
+\begin{definicion}
+$A_{m \times n}$ por $B_{n \times p}$ es posible si \textbf{columnas de $A$ $=$ filas de $B$}. El resultado $C_{m \times p}$ tiene:
+\[
+c_{ij} = a_{i1}b_{1j}+a_{i2}b_{2j}+\cdots+a_{in}b_{nj} = \sum_{k=1}^{n} a_{ik}b_{kj}.
+\]
+Fila $i$ de $A$ por columna $j$ de $B$.
+\end{definicion}
+
+\begin{observacion}
+Es el error típico en código: si las dimensiones internas no coinciden, no se puede multiplicar (NumPy diría \texttt{shapes not aligned}).
+\end{observacion}
+
+\begin{ejemplo}[Paso a paso]
+\[
+A_{2 \times 3} = \begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}, \quad B_{3 \times 2} = \begin{pmatrix} 7 & 8 \\ 9 & 10 \\ 11 & 12 \end{pmatrix}
+\]
+\[
+AB = \begin{pmatrix}
+1\cdot7+2\cdot9+3\cdot11 & 1\cdot8+2\cdot10+3\cdot12 \\
+4\cdot7+5\cdot9+6\cdot11 & 4\cdot8+5\cdot10+6\cdot12
+\end{pmatrix} = \begin{pmatrix} 58 & 64 \\ 139 & 154 \end{pmatrix}_{2 \times 2}.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[No conmuta]
+\[
+A=\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix},\; B=\begin{pmatrix} 0 & 1 \\ -1 & 0 \end{pmatrix} \Rightarrow AB=\begin{pmatrix} -2 & 1 \\ -4 & 3 \end{pmatrix},\; BA=\begin{pmatrix} 3 & 4 \\ -1 & -2 \end{pmatrix}.
+\]
+$AB \neq BA$: el orden importa, como aplicar primero un filtro y después otro.
+\end{ejemplo}
+
+\begin{ejemplo}[Matriz por vector: capa lineal]
+\[
+W = \begin{pmatrix} 2 & -1 \\ 0 & 3 \end{pmatrix}, \quad x = \begin{pmatrix} 4 \\ 5 \end{pmatrix} \Rightarrow Wx = \begin{pmatrix} 2\cdot4+(-1)\cdot5 \\ 0\cdot4+3\cdot5 \end{pmatrix} = \begin{pmatrix} 3 \\ 15 \end{pmatrix}.
+\]
+Así funciona una neurona o capa densa: $y = Wx+b$.
+\end{ejemplo}
+
+\begin{ejemplo}[Incompatible]
+$A_{2 \times 3}$ por $B_{2 \times 2}$ es imposible: $3 \neq 2$. En código hay que trasponer o corregir dimensiones.
+\end{ejemplo}
+
+\subsection{Propiedades del producto de matrices}
+\begin{propiedad}[Asociativa]
+Si los \'ordenes son compatibles, $(AB)C = A(BC)$.
+\end{propiedad}
+\begin{ejemplo}
+$A=\begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix}$, $B=\begin{pmatrix} 2 & 0 \\ 1 & 1 \end{pmatrix}$, $C=\begin{pmatrix} 1 \\ 3 \end{pmatrix}$: tanto $(AB)C$ como $A(BC)$ dan $\begin{pmatrix} 13 \\ 4 \end{pmatrix}$. En programaci\'on permite agrupar transformaciones como se quiera.
+\end{ejemplo}
+
+\begin{propiedad}[Distributiva]
+$A(B+C) = AB+AC$ y $(A+B)C = AC+BC$ (siempre con \'ordenes compatibles).
+\end{propiedad}
+\begin{ejemplo}
+$A=\begin{pmatrix} 1 & 0 \\ 2 & 1 \end{pmatrix}$, $B=\begin{pmatrix} 1 & 1 \\ 0 & 2 \end{pmatrix}$, $C=\begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$: $A(B+C)=AB+AC=\begin{pmatrix} 2 & 2 \\ 3 & 5 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{propiedad}[Neutro y nula]
+Si $A_{m \times n}$: $A I_n = I_m A = A$ y $A O = O A = O$ (con \'ordenes compatibles).
+\end{propiedad}
+\begin{ejemplo}
+$A=\begin{pmatrix} 3 & 1 \\ 0 & 2 \end{pmatrix}$: $A I_2 = A$ y $A \begin{pmatrix} 0 & 0 \\ 0 & 0 \end{pmatrix} = \begin{pmatrix} 0 & 0 \\ 0 & 0 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{propiedad}[Escalar]
+$k(AB) = (kA)B = A(kB)$ para todo n\'umero $k$.
+\end{propiedad}
+\begin{ejemplo}
+$2(AB) = (2A)B$ con $A=\begin{pmatrix} 1 & 2 \\ 3 & 0 \end{pmatrix}$, $B=\begin{pmatrix} 1 \\ -1 \end{pmatrix}$: ambos dan $\begin{pmatrix} -2 \\ 6 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{propiedad}[No conmutativa: en general $AB \neq BA$]
+El producto de matrices \textbf{no es conmutativo}. Aunque $AB$ y $BA$ existan, suelen ser distintos; incluso puede existir uno y no el otro.
+\end{propiedad}
+\begin{ejemplo}[Contraejemplo m\'inimo]
+\[
+A=\begin{pmatrix} 1 & 1 \\ 0 & 0 \end{pmatrix}, \quad B=\begin{pmatrix} 1 & 0 \\ 1 & 0 \end{pmatrix} \Rightarrow AB=\begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix} \neq BA=\begin{pmatrix} 1 & 1 \\ 1 & 1 \end{pmatrix}.
+\]
+\end{ejemplo}
+
+\begin{ejemplo}[Gr\'aficos: rotar y escalar no conmutan]
+$R=\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}$ (rotaci\'on 90$^\circ$) y $E=\begin{pmatrix} 2 & 0 \\ 0 & 1 \end{pmatrix}$ (estira en $x$):
+\[
+RE=\begin{pmatrix} 0 & -1 \\ 2 & 0 \end{pmatrix} \neq ER=\begin{pmatrix} 0 & -2 \\ 1 & 0 \end{pmatrix}.
+\]
+Aplicadas al punto $\begin{pmatrix} 1 \\ 1 \end{pmatrix}$ dan $(-1,2)$ y $(-2,1)$: el orden del \textit{pipeline} cambia el resultado.
+\end{ejemplo}
+
+\begin{observacion}
+Consecuencias directas de la no conmutatividad: $(AB)^2 \neq A^2B^2$ en general, y al despejar $AX=B$ hay que multiplicar por $A^{-1}$ del lado correcto ($X=A^{-1}B$, no $BA^{-1}$).
+\end{observacion}
+
+\subsection{Potencia de matrices}
+\begin{definicion}
+Solo para cuadradas: $A^0=I$, $A^1=A$, $A^{n+1}=A^n \cdot A$.
+\end{definicion}
+
+\begin{ejemplo}
+Si $A=\begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix}$, entonces $A^2 = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}$ y $A^3 = A^2 A = \begin{pmatrix} 3 & 2 \\ 2 & 1 \end{pmatrix}$ (aparece Fibonacci).
+\end{ejemplo}
+
+\begin{ejemplo}
+Si $D=\begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}$, entonces $D^2=\begin{pmatrix} 4 & 0 \\ 0 & 9 \end{pmatrix}$, $D^3=\begin{pmatrix} 8 & 0 \\ 0 & 27 \end{pmatrix}$: en diagonales se potencia elemento a elemento.
+\end{ejemplo}
+
+\begin{ejemplo}[Caminos en un grafo]
+Si $G$ es adyacencia, $G^2$ cuenta caminos de $2$ pasos. Para $G=\begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 0 \\ 1 & 0 & 0 \end{pmatrix}$, $G^2=\begin{pmatrix} 2 & 0 & 0 \\ 0 & 1 & 1 \\ 0 & 1 & 1 \end{pmatrix}$: hay 2 formas de salir del nodo 1 y volver en 2 pasos.
+\end{ejemplo}
+
+\begin{definicion}
+$A$ es \textbf{idempotente} si $A^2=A$ (aplicarla dos veces es igual que una).
+\end{definicion}
+
+\begin{ejemplo}
+$P=\begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}$: $P^2=\begin{pmatrix} 1 & 0 \\ 0 & 0 \end{pmatrix}=P$. Proyecta $(x,y)$ sobre el eje $x$.
+\end{ejemplo}
+
+\begin{ejemplo}
+$Q=\begin{pmatrix} 0{,}5 & 0{,}5 \\ 0{,}5 & 0{,}5 \end{pmatrix}$: $Q^2=Q$. Promedia dos valores; promediar dos veces no cambia nada. Ideal de filtro estable.
+\end{ejemplo}
+
+%=====================================================
+\section{Neutro, simétrico, regular y singular}
+%=====================================================
+\begin{definicion}
+$O$ es el \textbf{neutro aditivo}: $A+O=A$. $I$ es el \textbf{neutro multiplicativo}: $AI=IA=A$.
+\end{definicion}
+
+\begin{definicion}
+La \textbf{opuesta} de $A$ es $-A$ (neutro de suma). La \textbf{inversa} de $A$ cuadrada, si existe, es $A^{-1}$ tal que $AA^{-1}=A^{-1}A=I$.
+\end{definicion}
+
+\begin{definicion}
+$A$ cuadrada es \textbf{regular} (o invertible) si tiene inversa; si no, es \textbf{singular}.
+\end{definicion}
+
+\begin{ejemplo}
+$A=\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$ es regular: $A^{-1}=\begin{pmatrix} -2 & 1 \\ 1{,}5 & -0{,}5 \end{pmatrix}$ (verificar $AA^{-1}=I_2$).
+\end{ejemplo}
+
+\begin{ejemplo}
+$B=\begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}$ es singular: la fila 2 es el doble de la 1 (filas dependientes, dato redundante). No tiene inversa.
+\end{ejemplo}
+
+\begin{ejemplo}[Programación]
+Sistema con filas proporcionales = sensores que miden lo mismo: la matriz es singular y el sistema no tiene solución única. En código el programa falla al invertir.
+\end{ejemplo}
+
+%=====================================================
+\section{Transposición}
+%=====================================================
+\begin{definicion}
+La \textbf{traspuesta} $A^t$ intercambia filas por columnas: si $A=(a_{ij})_{m \times n}$, entonces $A^t=(a_{ji})_{n \times m}$.
+\end{definicion}
+
+\begin{ejemplo}
+Si $A=\begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}_{2 \times 3}$, entonces $A^t=\begin{pmatrix} 1 & 4 \\ 2 & 5 \\ 3 & 6 \end{pmatrix}_{3 \times 2}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Dataset]
+Tabla alumnos$\times$materias $3 \times 2$ traspuesta queda materias$\times$alumnos $2 \times 3$. En NumPy es \texttt{A.T}.
+\end{ejemplo}
+
+\subsection{Propiedades}
+\begin{propiedad}
+$(A+B)^t = A^t+B^t$.
+\end{propiedad}
+\begin{ejemplo}
+$A=\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$, $B=\begin{pmatrix} 0 & 1 \\ -1 & 2 \end{pmatrix}$. $A+B=\begin{pmatrix} 1 & 3 \\ 2 & 6 \end{pmatrix}$, $(A+B)^t=\begin{pmatrix} 1 & 2 \\ 3 & 6 \end{pmatrix} = A^t+B^t$.
+\end{ejemplo}
+
+\begin{propiedad}
+$(A \cdot B)^t = B^t \cdot A^t$ (se da vuelta el orden).
+\end{propiedad}
+\begin{ejemplo}
+Con $A=\begin{pmatrix} 1 & 2 \\ 0 & 1 \end{pmatrix}$, $B=\begin{pmatrix} 3 & 0 \\ 1 & 2 \end{pmatrix}$: $AB=\begin{pmatrix} 5 & 4 \\ 1 & 2 \end{pmatrix}$, $(AB)^t=\begin{pmatrix} 5 & 1 \\ 4 & 2 \end{pmatrix}=B^tA^t$.
+\end{ejemplo}
+
+\begin{propiedad}
+$(A^t)^t = A$.
+\end{propiedad}
+\begin{ejemplo}
+Si $A=\begin{pmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{pmatrix}$, trasponer dos veces devuelve $A$.
+\end{ejemplo}
+
+\begin{propiedad}
+$(kA)^t = kA^t$.
+\end{propiedad}
+\begin{ejemplo}
+$2A = \begin{pmatrix} 2 & 4 \\ 6 & 8 \end{pmatrix}$ con $A=\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$: $(2A)^t=\begin{pmatrix} 2 & 6 \\ 4 & 8 \end{pmatrix}=2A^t$.
+\end{ejemplo}
+
+\subsection{Simétrica, antisimétrica y ortogonal}
+\begin{definicion}
+$A$ cuadrada es \textbf{simétrica} si $A^t=A$; \textbf{antisimétrica} si $A^t=-A$ (entonces la diagonal es $0$); \textbf{ortogonal} si $A^t A = I$, es decir $A^{-1}=A^t$.
+\end{definicion}
+
+\begin{ejemplo}[Simétrica: red no dirigida]
+\[
+S=\begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 0 \end{pmatrix}=S^t.
+\]
+Si el nodo $i$ se conecta con $j$, $j$ se conecta con $i$.
+\end{ejemplo}
+
+\begin{ejemplo}[Antisimétrica: diferencias]
+\[
+K=\begin{pmatrix} 0 & 2 & -1 \\ -2 & 0 & 3 \\ 1 & -3 & 0 \end{pmatrix}=-K^t.
+\]
+Sirve para torneos o diferencias $a_{ij}=-a_{ji}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Ortogonal: rotación 90°]
+\[
+R=\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}, \quad R^t R = \begin{pmatrix} 0 & 1 \\ -1 & 0 \end{pmatrix}\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}=I_2.
+\]
+Rota el punto $(x,y)$ a $(-y,x)$ sin deformar: clave en videojuegos y gráficos.
+\end{ejemplo}
+
+\newpage
+
+%=====================================================
+\section{Rango e inversa por Gauss-Jordan}
+%=====================================================
+\begin{definicion}
+Las \textbf{transformaciones elementales} por filas son:
+\begin{enumerate}[label=\arabic*.]
+\item Intercambiar dos filas: $F_i \leftrightarrow F_j$.
+\item Multiplicar/dividir una fila por $k \neq 0$: $F_i \to kF_i$.
+\item Sumar a una fila un múltiplo de otra: $F_i \to F_i + kF_j$.
+\end{enumerate}
+\end{definicion}
+
+\begin{definicion}
+El \textbf{rango} de $A$ es el número de filas no nulas (pivotes) que quedan al escalonar por Gauss. Mide cuántas filas son independientes.
+\end{definicion}
+
+\begin{ejemplo}[Rango]
+$\begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix} \xrightarrow{F_2 \to F_2-2F_1} \begin{pmatrix} 1 & 2 \\ 0 & 0 \end{pmatrix}$: rango $1$ (una fila sobra).
+\end{ejemplo}
+
+\begin{ejemplo}[Rango máximo]
+$I_3$ tiene rango $3$. Un dataset $3 \times 3$ de rango $3$ no tiene columnas redundantes.
+\end{ejemplo}
+
+\subsection{Método de Gauss-Jordan para la inversa}
+\begin{definicion}
+Para hallar $A^{-1}$ se forma $(A \mid I)$ y con operaciones elementales se lleva a $(I \mid A^{-1})$. Si no se puede llegar a $I$, $A$ es singular.
+\end{definicion}
+
+\begin{ejemplo}[Inversa $2 \times 2$]
+\[
+\left(\begin{array}{cc|cc}
+1 & 2 & 1 & 0 \\
+3 & 4 & 0 & 1
+\end{array}\right)
+\xrightarrow{F_2 \to F_2-3F_1}
+\left(\begin{array}{cc|cc}
+1 & 2 & 1 & 0 \\
+0 & -2 & -3 & 1
+\end{array}\right)
+\]
+\[
+\xrightarrow{F_2 \to F_2/(-2)}
+\left(\begin{array}{cc|cc}
+1 & 2 & 1 & 0 \\
+0 & 1 & 3/2 & -1/2
+\end{array}\right)
+\xrightarrow{F_1 \to F_1-2F_2}
+\left(\begin{array}{cc|cc}
+1 & 0 & -2 & 1 \\
+0 & 1 & 3/2 & -1/2
+\end{array}\right)
+\]
+Luego $A^{-1}=\begin{pmatrix} -2 & 1 \\ 3/2 & -1/2 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Inversa $3 \times 3$]
+\[
+A=\begin{pmatrix} 1 & 0 & 1 \\ 0 & 1 & 1 \\ 1 & 1 & 0 \end{pmatrix}, \quad (A\mid I_3)=
+\left(\begin{array}{ccc|ccc}
+1 & 0 & 1 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 & 1 & 0 \\
+1 & 1 & 0 & 0 & 0 & 1
+\end{array}\right)
+\]
+$F_3 \to F_3-F_1$:
+\[
+\left(\begin{array}{ccc|ccc}
+1 & 0 & 1 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 & 1 & 0 \\
+0 & 1 & -1 & -1 & 0 & 1
+\end{array}\right)
+\]
+$F_3 \to F_3-F_2$:
+\[
+\left(\begin{array}{ccc|ccc}
+1 & 0 & 1 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 & 1 & 0 \\
+0 & 0 & -2 & -1 & -1 & 1
+\end{array}\right)
+\]
+$F_3 \to F_3/(-2)$, luego $F_1 \to F_1-F_3$, $F_2 \to F_2-F_3$:
+\[
+\left(\begin{array}{ccc|ccc}
+1 & 0 & 0 & 1/2 & -1/2 & 1/2 \\
+0 & 1 & 0 & -1/2 & 1/2 & 1/2 \\
+0 & 0 & 1 & 1/2 & 1/2 & -1/2
+\end{array}\right)
+\]
+Así $A^{-1}=\begin{pmatrix} 1/2 & -1/2 & 1/2 \\ -1/2 & 1/2 & 1/2 \\ 1/2 & 1/2 & -1/2 \end{pmatrix}$.
+\end{ejemplo}
+
+\begin{ejemplo}[Singular, no hay inversa]
+\[
+\left(\begin{array}{cc|cc}
+1 & 2 & 1 & 0 \\
+2 & 4 & 0 & 1
+\end{array}\right)
+\xrightarrow{F_2 \to F_2-2F_1}
+\left(\begin{array}{cc|cc}
+1 & 2 & 1 & 0 \\
+0 & 0 & -2 & 1
+\end{array}\right)
+\]
+La fila $0=0$ a la izquierda impide llegar a $I$: $A$ es singular, rango $1$.
+\end{ejemplo}
+
+%=====================================================
+\section{Rango, escalones y teorema de Rouch\'e-Frobenius}
+%=====================================================
+\begin{definicion}
+Al escalonar una matriz por Gauss, cada fila no nula forma un \textbf{escal\'on} (pivote). El n\'umero de escalones es el \textbf{rango}:
+\[
+\operatorname{rango}(A) = \text{n\'umero de filas no nulas al escalonar} = \text{n\'umero de pivotes}.
+\]
+\end{definicion}
+
+\begin{propiedad}[Teorema de Rouch\'e-Frobenius, solo enunciado]
+Sea un sistema de $m$ ecuaciones con $n$ inc\'ognitas $AX=B$, con $A_{m \times n}$ matriz de coeficientes y $(A\mid B)_{m \times (n+1)}$ matriz ampliada. Entonces:
+\begin{enumerate}[label=\arabic*.]
+\item Si $\operatorname{rango}(A) \neq \operatorname{rango}(A\mid B)$: sistema \textbf{incompatible} (sin soluci\'on).
+\item Si $\operatorname{rango}(A) = \operatorname{rango}(A\mid B) = n$: sistema \textbf{compatible determinado} (soluci\'on \'unica).
+\item Si $\operatorname{rango}(A) = \operatorname{rango}(A\mid B) < n$: sistema \textbf{compatible indeterminado} (infinitas soluciones).
+\end{enumerate}
+\end{propiedad}
+
+\begin{observacion}
+En c\'odigo: escalonar $(A\mid B)$ y contar pivotes a izquierda y derecha de la barra. Si aparece una fila $[0\cdots 0\mid b\neq 0]$, es $0=b$: incompatible.
+\end{observacion}
+
+\begin{ejemplo}[Compatible determinado, rango $2=n$]
+\[
+\left(\begin{array}{cc|c}
+1 & 2 & 5 \\
+3 & 4 & 11
+\end{array}\right)
+\xrightarrow{F_2 \to F_2-3F_1}
+\left(\begin{array}{cc|c}
+1 & 2 & 5 \\
+0 & -2 & -4
+\end{array}\right)
+\]
+2 escalones: $\operatorname{rango}(A)=2$, $\operatorname{rango}(A\mid B)=2=n=2$. Compatible determinado: soluci\'on \'unica $x=1$, $y=2$.
+\end{ejemplo}
+
+\begin{ejemplo}[Incompatible, $1 \neq 2$]
+\[
+\left(\begin{array}{cc|c}
+1 & 2 & 3 \\
+2 & 4 & 9
+\end{array}\right)
+\xrightarrow{F_2 \to F_2-2F_1}
+\left(\begin{array}{cc|c}
+1 & 2 & 3 \\
+0 & 0 & 3
+\end{array}\right)
+\]
+Fila $0=3$: $\operatorname{rango}(A)=1 \neq \operatorname{rango}(A\mid B)=2$. Incompatible, sin soluci\'on. Son dos rectas paralelas.
+\end{ejemplo}
+
+\begin{ejemplo}[Compatible indeterminado, $1<2$]
+\[
+\left(\begin{array}{cc|c}
+1 & 2 & 3 \\
+2 & 4 & 6
+\end{array}\right)
+\xrightarrow{F_2 \to F_2-2F_1}
+\left(\begin{array}{cc|c}
+1 & 2 & 3 \\
+0 & 0 & 0
+\end{array}\right)
+\]
+$\operatorname{rango}(A)=\operatorname{rango}(A\mid B)=1 < n=2$. Indeterminado: infinitas soluciones $x+2y=3$. Son dos rectas coincidentes.
+\end{ejemplo}
+
+\begin{ejemplo}[$3 \times 3$ determinado]
+\[
+\left(\begin{array}{ccc|c}
+1 & 0 & 1 & 3 \\
+0 & 1 & 1 & 4 \\
+1 & 1 & 0 & 3
+\end{array}\right)
+\xrightarrow{F_3 \to F_3-F_1}
+\left(\begin{array}{ccc|c}
+1 & 0 & 1 & 3 \\
+0 & 1 & 1 & 4 \\
+0 & 1 & -1 & 0
+\end{array}\right)
+\xrightarrow{F_3 \to F_3-F_2}
+\left(\begin{array}{ccc|c}
+1 & 0 & 1 & 3 \\
+0 & 1 & 1 & 4 \\
+0 & 0 & -2 & -4
+\end{array}\right)
+\]
+3 escalones: rango $3=n$. Compatible determinado: soluci\'on \'unica.
+\end{ejemplo}
+
+%=====================================================
+\section{Ecuaciones matriciales}
+%=====================================================
+\begin{definicion}
+Son ecuaciones con incógnita matricial $X$. Las básicas:
+\[
+AX=B \Rightarrow X=A^{-1}B, \qquad XA=B \Rightarrow X=BA^{-1}, \qquad AXB=C \Rightarrow X=A^{-1}CB^{-1}.
+\]
+El orden y el lado importan porque el producto no conmuta.
+\end{definicion}
+
+\begin{ejemplo}[Tipo $AX=B$]
+\[
+A=\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}, \; B=\begin{pmatrix} 5 \\ 11 \end{pmatrix}, \quad AX=B.
+\]
+Como $A^{-1}=\begin{pmatrix} -2 & 1 \\ 3/2 & -1/2 \end{pmatrix}$:
+\[
+X=A^{-1}B=\begin{pmatrix} -2\cdot5+1\cdot11 \\ 1{,}5\cdot5-0{,}5\cdot11 \end{pmatrix}=\begin{pmatrix} 1 \\ 2 \end{pmatrix}.
+\]
+Es un sistema $2 \times 2$: $x=1$, $y=2$. En código es \texttt{numpy.linalg.solve(A,B)}.
+\end{ejemplo}
+
+\begin{ejemplo}[Tipo $XA=B$, decodificar]
+\[
+A=\begin{pmatrix} 2 & 0 \\ 0 & 3 \end{pmatrix}, \; B=\begin{pmatrix} 8 & 12 \\ 4 & 6 \end{pmatrix}, \quad XA=B.
+\]
+$A^{-1}=\begin{pmatrix} 1/2 & 0 \\ 0 & 1/3 \end{pmatrix}$, luego:
+\[
+X=BA^{-1}=\begin{pmatrix} 8 & 12 \\ 4 & 6 \end{pmatrix}\begin{pmatrix} 1/2 & 0 \\ 0 & 1/3 \end{pmatrix}=\begin{pmatrix} 4 & 4 \\ 2 & 2 \end{pmatrix}.
+\]
+$A$ escalaba por $2$ y $3$; $X$ recupera el original: como ``deshacer'' una transformación.
+\end{ejemplo}
+
+\begin{ejemplo}[Tipo $AXB=C$]
+\[
+A=\begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}, \; B=\begin{pmatrix} 1 & 0 \\ 1 & 1 \end{pmatrix}, \; C=\begin{pmatrix} 3 & 2 \\ 1 & 1 \end{pmatrix}.
+\]
+$A^{-1}=\begin{pmatrix} 1 & -1 \\ 0 & 1 \end{pmatrix}$, $B^{-1}=\begin{pmatrix} 1 & 0 \\ -1 & 1 \end{pmatrix}$:
+\[
+X=A^{-1}CB^{-1}=\begin{pmatrix} 1 & -1 \\ 0 & 1 \end{pmatrix}\begin{pmatrix} 3 & 2 \\ 1 & 1 \end{pmatrix}\begin{pmatrix} 1 & 0 \\ -1 & 1 \end{pmatrix}=\begin{pmatrix} 1 & 1 \\ 0 & 0 \end{pmatrix}.
+\]
+Verificación: $AXB=C$.
+\end{ejemplo}
+
+\end{document}

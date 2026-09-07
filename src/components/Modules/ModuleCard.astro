@@ -1,0 +1,63 @@
+---
+import Icon from "../icons/Icon.astro";
+import LessonItem from "./LessonItem.astro";
+import type { Module } from "../../data/modules.ts";
+
+interface Props {
+  module: Module;
+}
+
+const { module } = Astro.props as Props;
+---
+<article class="relative" aria-labelledby={`mod-${module.id}`}>
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute -top-3 right-0 select-none text-6xl font-extrabold text-white/6"
+  >
+    {module.number}
+  </span>
+  <div class="flex items-start gap-3">
+    <span class="mt-0.5 text-amber-400">
+      <Icon name={module.icon} class="h-7 w-7" />
+    </span>
+    <div>
+      <h2 id={`mod-${module.id}`} class="text-[15px] font-bold text-amber-300">
+        {module.title}
+      </h2>
+      <p class="mt-1 max-w-xs text-sm leading-relaxed text-zinc-500">
+        {module.description}
+      </p>
+      <div
+        data-module-progress={module.id}
+        role="progressbar"
+        aria-label={`Progreso de ${module.title}`}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={0}
+        class="mt-2 max-w-xs"
+      >
+        <div class="h-1 overflow-hidden rounded-full bg-white/10">
+          <div
+            data-module-fill
+            class="h-full w-0 rounded-full bg-amber-400"
+          ></div>
+        </div>
+        <p class="mt-1 text-xs text-zinc-500">
+          <span data-module-pct>0%</span> completado
+        </p>
+      </div>
+    </div>
+  </div>
+  <ul class="mt-4 space-y-0.5 border-l border-transparent pl-9">
+    {
+      module.lessons.map((lesson) => (
+        <LessonItem
+          moduleId={module.id}
+          slug={lesson.slug}
+          title={lesson.title}
+          kind={lesson.kind}
+        />
+      ))
+    }
+  </ul>
+</article>

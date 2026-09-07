@@ -1,0 +1,36 @@
+---
+import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
+import SearchPalette from "../components/Header/SearchPalette.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Matrices — 2MF Arroyo Seco - Prof. Javier Martín",
+  description = "Teórico y práctico de matrices para alumnos de 2MF ETAS.",
+} = Astro.props as Props;
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <ClientRouter />
+  </head>
+  <body class="min-h-screen bg-[#0a0a10] text-zinc-300 antialiased">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-amber-400 focus:px-3 focus:py-2 focus:text-black"
+    >
+      Saltar al contenido principal
+    </a>
+    <slot />
+    <SearchPalette />
+  </body>
+</html>
