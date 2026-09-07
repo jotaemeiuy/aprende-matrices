@@ -27,6 +27,24 @@ const continuePayload: string = JSON.stringify(continueIndex);
     <HeroBadge icon="code" text={`${practiceCount} prácticas`} />
     <HeroBadge icon="shield" text="100% Gratuito" />
   </ul>
+  <div class="mt-7 flex flex-wrap items-center justify-center gap-2.5" aria-label="Descargar material en PDF">
+    <a
+      href="/teoria-matrices.pdf"
+      download="teoria-matrices.pdf"
+      class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-zinc-200 hover:border-amber-400/50 hover:text-white"
+    >
+      <Icon name="download" class="h-4 w-4 text-amber-400" />
+      Teoría PDF
+    </a>
+    <a
+      href="/practica-matrices.pdf"
+      download="practica-matrices.pdf"
+      class="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-zinc-200 hover:border-amber-400/50 hover:text-white"
+    >
+      <Icon name="download" class="h-4 w-4 text-amber-400" />
+      Práctica PDF
+    </a>
+  </div>
   <p class="mt-6">
     <a
       data-continue-link
