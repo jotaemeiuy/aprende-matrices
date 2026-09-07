@@ -6,3 +6,6 @@ imagenes/
 *.tex
 *.log
 .DS_Store
+
+# Agente (instrucciones locales, no se suben)
+AGENTS.md
