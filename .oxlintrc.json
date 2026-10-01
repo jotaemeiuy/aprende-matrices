@@ -1,0 +1,3 @@
+{
+  "ignorePatterns": ["public/calculadora/**", "dist/**", ".astro/**"]
+}

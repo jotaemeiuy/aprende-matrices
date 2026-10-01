@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Matrices</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="particles"></canvas>
+
+  <!-- MENÚ PRINCIPAL -->
+  <div id="menu" class="menu">
+    <div class="course-top">
+      <a class="course-btn" href="/">← Volver al curso</a>
+    </div>
+    <header class="header">
+      <h1 class="title">Calculadora de Matrices</h1>
+      <p class="subtitle">Explora el álgebra lineal de forma interactiva</p>
+    </header>
+
+    <section class="cards">
+      <button class="card" data-view="mul">
+        <span class="card-icon">×</span>
+        <span class="card-title">Multiplicación</span>
+        <span class="card-desc">Fila × Columna con animación</span>
+      </button>
+      <button class="card" data-view="add">
+        <span class="card-icon">+</span>
+        <span class="card-title">Suma</span>
+        <span class="card-desc">Elemento a elemento</span>
+      </button>
+      <button class="card" data-view="sub">
+        <span class="card-icon">−</span>
+        <span class="card-title">Resta</span>
+        <span class="card-desc">Elemento a elemento</span>
+      </button>
+      <button class="card" data-view="inv">
+        <span class="card-icon">⁻¹</span>
+        <span class="card-title">Inversa</span>
+        <span class="card-desc">Matriz inversa</span>
+      </button>
+      <button class="card" data-view="det">
+        <span class="card-icon">det</span>
+        <span class="card-title">Determinante</span>
+        <span class="card-desc">Valor escalar</span>
+      </button>
+      <button class="card" data-view="trace">
+        <span class="card-icon">tr</span>
+        <span class="card-title">Traza</span>
+        <span class="card-desc">Suma diagonal</span>
+      </button>
+    </section>
+  </div>
+
+  <!-- VISTA MULTIPLICACIÓN -->
+  <div id="view-mul" class="view hidden">
+    <nav class="view-nav">
+      <div class="nav-left"><button class="back-btn" data-menu="menu">← Volver</button><a class="course-btn" href="/">← Curso</a></div>
+      <span class="view-title">Multiplicación de Matrices</span>
+      <div class="dim-selector">
+        <button class="dim-btn active" data-dim="2">2×2</button>
+        <button class="dim-btn" data-dim="3">3×3</button>
+        <button class="dim-btn" data-dim="4">4×4</button>
+      </div>
+    </nav>
+
+    <div class="mul-layout">
+      <div class="matrix-container mul-b">
+        <h2 class="matrix-title">Matriz B</h2>
+        <div id="matrixB" class="matrix"></div>
+      </div>
+
+      <div class="matrix-container mul-a">
+        <h2 class="matrix-title">Matriz A</h2>
+        <div id="matrixA" class="matrix"></div>
+      </div>
+
+      <div class="matrix-container mul-r">
+        <h2 class="matrix-title">Resultado</h2>
+        <div id="result-grid" class="matrix"></div>
+      </div>
+    </div>
+
+    <canvas id="anim-canvas"></canvas>
+    <div id="calc-balloon" class="calc-balloon hidden"></div>
+  </div>
+
+  <!-- VISTA SUMA -->
+  <div id="view-add" class="view hidden">
+    <nav class="view-nav">
+      <div class="nav-left"><button class="back-btn">← Volver</button><a class="course-btn" href="/">← Curso</a></div>
+      <span class="view-title">Suma de Matrices</span>
+      <div class="dim-selector">
+        <button class="dim-btn active" data-dim="2">2×2</button>
+        <button class="dim-btn" data-dim="3">3×3</button>
+        <button class="dim-btn" data-dim="4">4×4</button>
+      </div>
+    </nav>
+    <div class="add-layout">
+      <div class="matrices-ab">
+        <div class="matrix-container">
+          <h2 class="matrix-title">Matriz A</h2>
+          <div id="matrixA-add" class="matrix"></div>
+        </div>
+        <span class="op-symbol">+</span>
+        <div class="matrix-container">
+          <h2 class="matrix-title">Matriz B</h2>
+          <div id="matrixB-add" class="matrix"></div>
+        </div>
+      </div>
+      <span class="op-symbol eq-symbol">=</span>
+      <div class="matrix-container result-container">
+        <h2 class="matrix-title">Resultado</h2>
+        <div id="result-add" class="matrix"></div>
+      </div>
+    </div>
+    <canvas id="anim-canvas-add"></canvas>
+    <div id="calc-balloon-add" class="calc-balloon hidden"></div>
+  </div>
+
+  <!-- VISTA RESTA -->
+  <div id="view-sub" class="view hidden">
+    <nav class="view-nav">
+      <div class="nav-left"><button class="back-btn">← Volver</button><a class="course-btn" href="/">← Curso</a></div>
+      <span class="view-title">Resta de Matrices</span>
+      <div class="dim-selector">
+        <button class="dim-btn active" data-dim="2">2×2</button>
+        <button class="dim-btn" data-dim="3">3×3</button>
+        <button class="dim-btn" data-dim="4">4×4</button>
+      </div>
+    </nav>
+    <div class="add-layout">
+      <div class="matrices-ab">
+        <div class="matrix-container">
+          <h2 class="matrix-title">Matriz A</h2>
+          <div id="matrixA-sub" class="matrix"></div>
+        </div>
+        <span class="op-symbol">−</span>
+        <div class="matrix-container">
+          <h2 class="matrix-title">Matriz B</h2>
+          <div id="matrixB-sub" class="matrix"></div>
+        </div>
+      </div>
+      <span class="op-symbol eq-symbol">=</span>
+      <div class="matrix-container result-container">
+        <h2 class="matrix-title">Resultado</h2>
+        <div id="result-sub" class="matrix"></div>
+      </div>
+    </div>
+    <canvas id="anim-canvas-sub"></canvas>
+    <div id="calc-balloon-sub" class="calc-balloon hidden"></div>
+  </div>
+
+  <!-- VISTA TRAZA -->
+  <div id="view-trace" class="view hidden">
+    <nav class="view-nav">
+      <div class="nav-left"><button class="back-btn">← Volver</button><a class="course-btn" href="/">← Curso</a></div>
+      <span class="view-title">Traza de Matriz</span>
+      <div class="dim-selector">
+        <button class="dim-btn active" data-dim="2">2×2</button>
+        <button class="dim-btn" data-dim="3">3×3</button>
+        <button class="dim-btn" data-dim="4">4×4</button>
+      </div>
+    </nav>
+    <div class="trace-layout">
+      <div class="matrix-container">
+        <h2 class="matrix-title">Matriz A</h2>
+        <div id="matrixA-trace" class="matrix"></div>
+      </div>
+      <div class="trace-result-box">
+        <span class="trace-label">tr(A) =</span>
+        <span id="trace-result-value" class="trace-value">?</span>
+      </div>
+    </div>
+    <canvas id="anim-canvas-trace"></canvas>
+    <div id="calc-balloon-trace" class="calc-balloon hidden"></div>
+  </div>
+
+  <!-- VISTA INVERSA -->
+  <div id="view-inv" class="view hidden">
+    <nav class="view-nav">
+      <div class="nav-left"><button class="back-btn">← Volver</button><a class="course-btn" href="/">← Curso</a></div>
+      <span class="view-title">Inversa — Gauss-Jordan</span>
+      <div class="dim-selector">
+        <button class="dim-btn active" data-dim="2">2×2</button>
+        <button class="dim-btn" data-dim="3">3×3</button>
+      </div>
+    </nav>
+    <div class="inv-layout">
+      <div class="inv-input-section">
+        <div class="matrix-container">
+          <h2 class="matrix-title">Matriz A</h2>
+          <div id="matrixA-inv" class="matrix"></div>
+        </div>
+        <button id="inv-calc-btn" class="action-btn action-btn-accent">Calcular pasos</button>
+      </div>
+      <div id="inv-steps" class="inv-steps"></div>
+    </div>
+    <canvas id="anim-canvas-inv"></canvas>
+  </div>
+
+  <!-- VISTA DETERMINANTE -->
+  <div id="view-det" class="view hidden">
+    <nav class="view-nav">
+      <div class="nav-left"><button class="back-btn">← Volver</button><a class="course-btn" href="/">← Curso</a></div>
+      <span class="view-title">Determinante</span>
+      <div class="dim-selector">
+        <button class="dim-btn active" data-dim="2">2×2</button>
+        <button class="dim-btn" data-dim="3">3×3</button>
+      </div>
+    </nav>
+    <div class="det-layout">
+      <div class="det-input-section">
+        <div class="matrix-container">
+          <h2 class="matrix-title">Matriz A</h2>
+          <div id="matrixA-det" class="matrix"></div>
+        </div>
+        <button id="det-calc-btn" class="action-btn action-btn-accent">Calcular</button>
+      </div>
+      <div id="det-result-area" class="det-result-area"></div>
+    </div>
+    <canvas id="anim-canvas-det"></canvas>
+    <div id="balloon-det" class="calc-balloon hidden"></div>
+  </div>
+
+  <!-- VISTA GENÉRICA (placeholder) -->
+  <div id="view-generic" class="view hidden">
+    <nav class="view-nav">
+      <div class="nav-left"><button class="back-btn">← Volver</button><a class="course-btn" href="/">← Curso</a></div>
+      <span class="view-title" id="generic-title">Operación</span>
+    </nav>
+    <div class="generic-content">
+      <p>Esta operación estará disponible pronto.</p>
+    </div>
+  </div>
+
+  <script src="particles.js"></script>
+  <script src="matrix-ops.js"></script>
+  <script src="shared.js"></script>
+  <script src="views-mul.js"></script>
+  <script src="views-ops.js"></script>
+  <script src="views-inv.js"></script>
+  <script src="views-det.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -14,20 +14,33 @@ const continueIndex: ContinueModule[] = modules.map((m) => ({
 }));
 const continuePayload: string = JSON.stringify(continueIndex);
 ---
-<section class="mx-auto max-w-4xl px-4 pb-10 pt-16 text-center sm:pt-20" aria-labelledby="hero-title">
-  <h1 id="hero-title" class="text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
+
+<section
+  class="mx-auto max-w-4xl px-4 pb-10 pt-16 text-center sm:pt-20"
+  aria-labelledby="hero-title"
+>
+  <h1
+    id="hero-title"
+    class="text-4xl font-extrabold tracking-tight text-white sm:text-6xl"
+  >
     Aprende Matrices
     <span class="mt-1 block text-amber-400">desde cero.</span>
   </h1>
   <p class="mx-auto mt-5 max-w-2xl text-base text-zinc-400 sm:text-lg">
     Material para 2MF Arroyo Seco · Prof. Javier Martín.
   </p>
-  <ul class="mt-7 flex flex-wrap items-center justify-center gap-2.5" aria-label="Características del curso">
+  <ul
+    class="mt-7 flex flex-wrap items-center justify-center gap-2.5"
+    aria-label="Características del curso"
+  >
     <HeroBadge icon="bolt" text={`${totalLessons} lecciones`} />
     <HeroBadge icon="code" text={`${practiceCount} prácticas`} />
     <HeroBadge icon="shield" text="100% Gratuito" />
   </ul>
-  <div class="mt-7 flex flex-wrap items-center justify-center gap-2.5" aria-label="Descargar material en PDF">
+  <div
+    class="mt-7 flex flex-wrap items-center justify-center gap-2.5"
+    aria-label="Descargar material en PDF"
+  >
     <a
       href="/teoria-matrices.pdf"
       download="teoria-matrices.pdf"
@@ -44,6 +57,14 @@ const continuePayload: string = JSON.stringify(continueIndex);
       <Icon name="download" class="h-4 w-4 text-amber-400" />
       Práctica PDF
     </a>
+
+    <a
+      href="/calculadora/index.html"
+      class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/50 bg-amber-400/10 px-4 py-1.5 text-sm font-semibold text-amber-300 hover:bg-amber-400/20 hover:text-amber-200"
+    >
+      <Icon name="matrix" class="h-4 w-4" />
+      Abrir calculadora
+    </a>
   </div>
   <p class="mt-6">
     <a
@@ -58,11 +79,16 @@ const continuePayload: string = JSON.stringify(continueIndex);
   </p>
 </section>
 
-<script type="application/json" data-continue-index is:inline set:html={continuePayload}></script>
+<script
+  type="application/json"
+  data-continue-index
+  is:inline
+  set:html={continuePayload}
+/>
 
 <script>
-  import { loadProgress } from "../../lib/progress.ts";
   import type { ContinueModule } from "../../lib/progress.ts";
+  import { loadProgress } from "../../lib/progress.ts";
 
   function initContinue(): void {
     const indexEl = document.querySelector("[data-continue-index]");
