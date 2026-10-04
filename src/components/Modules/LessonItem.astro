@@ -15,7 +15,7 @@ const { moduleId, slug, title, kind } = Astro.props as Props;
     id={`${moduleId}-${slug}`}
     href={`/clase/${moduleId}/${slug}`}
     data-astro-prefetch
-    class="group flex items-center gap-1.5 rounded px-1 py-1 text-[15px] text-zinc-400 hover:text-white"
+    class="group flex items-center gap-1.5 rounded px-1 py-1 text-[15px] text-zinc-400 transition-all duration-200 hover:bg-amber-400/10 hover:text-amber-300 focus-visible:bg-amber-400/10 focus-visible:text-amber-300 focus-visible:outline-none"
   >
     <Icon name="chevron" class="h-3.5 w-3.5 shrink-0 text-zinc-600 group-hover:text-amber-400" />
     <span>{title}</span>

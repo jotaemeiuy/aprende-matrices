@@ -9,18 +9,21 @@ interface Props {
 
 const { module } = Astro.props as Props;
 ---
-<article class="relative" aria-labelledby={`mod-${module.id}`}>
+<article
+  class="group/section relative overflow-hidden rounded-2xl border border-transparent px-5 py-5 transition-all duration-300 hover:border-amber-400/25 hover:bg-white/[0.06] hover:shadow-[0_0_40px_-12px_rgba(251,191,36,0.35)] focus-within:border-amber-400/25 focus-within:bg-white/[0.06]"
+  aria-labelledby={`mod-${module.id}`}
+>
   <span
     aria-hidden="true"
-    class="pointer-events-none absolute -top-3 right-0 select-none text-6xl font-extrabold text-white/6"
+    class="pointer-events-none absolute top-2 right-4 select-none text-6xl font-black leading-none text-white/[0.06] transition-colors duration-500 group-hover/section:text-white/[0.12]"
   >
     {module.number}
   </span>
   <div class="flex items-start gap-3">
-    <span class="mt-0.5 text-amber-400">
+    <span class="mt-0.5 shrink-0 text-amber-400/50 transition-colors duration-300 group-hover/section:text-amber-400/80">
       <Icon name={module.icon} class="h-7 w-7" />
     </span>
-    <div>
+    <div class="min-w-0 flex-1 pr-14">
       <h2 id={`mod-${module.id}`} class="text-[15px] font-bold text-amber-300">
         {module.title}
       </h2>
