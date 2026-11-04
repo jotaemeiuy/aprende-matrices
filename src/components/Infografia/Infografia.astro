@@ -1,0 +1,293 @@
+---
+import katex from "katex";
+import Icon from "../icons/Icon.astro";
+import { modules } from "../../data/modules.ts";
+import type { Infografia } from "../../data/infografias.ts";
+
+interface Props {
+  infografia: Infografia;
+}
+
+const { infografia } = Astro.props as Props;
+const modulo = modules.find((m) => m.id === infografia.moduleId);
+const icono = modulo?.icon ?? "matrix";
+const total = infografia.pasos.length;
+const baseId = `ig-${infografia.moduleId}`;
+const tituloId = `${baseId}-titulo`;
+
+const renderFormula = (formula: string): string =>
+  katex.renderToString(formula, {
+    displayMode: true,
+    throwOnError: false,
+    strict: false,
+  });
+---
+
+<figure
+  id={baseId}
+  data-infografia
+  data-total={total}
+  data-step="1"
+  aria-labelledby={tituloId}
+  class="my-10 overflow-hidden rounded-2xl border border-white/10 bg-linear-to-b from-white/[0.04] to-white/[0.01] shadow-xl shadow-black/20"
+>
+  <div class="flex items-center justify-between gap-3 px-4 pt-4 sm:px-6">
+    <span
+      class="inline-flex items-center gap-1.5 rounded-full border border-amber-400/20 bg-amber-400/[0.08] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-amber-300/90"
+    >
+      <Icon name={icono} class="h-3.5 w-3.5" />
+      Infografía
+    </span>
+    <span
+      data-counter
+      aria-hidden="true"
+      class="hidden font-mono text-xs text-zinc-500 print:hidden"
+    >
+      1 / {total}
+    </span>
+  </div>
+
+  <figcaption class="px-4 pt-2 sm:px-6">
+    <h2
+      id={tituloId}
+      class="text-[17px] font-bold leading-snug text-zinc-100 sm:text-lg"
+    >
+      {infografia.titulo}
+    </h2>
+    <p class="mt-1 text-xs text-zinc-500">{infografia.subtitulo}</p>
+  </figcaption>
+
+  <div class="px-3 py-4 sm:px-6 sm:py-6">
+    <div
+      data-progress-track
+      class="hidden h-1 overflow-hidden rounded-full bg-white/10 print:hidden"
+      aria-hidden="true"
+    >
+      <div
+        data-progress
+        class="h-full rounded-full bg-amber-400 transition-[width] duration-300"
+        style={`width: ${100 / total}%`}
+      >
+      </div>
+    </div>
+
+    <div class="mt-4 space-y-4">
+      {
+        infografia.pasos.map((paso, indice) => {
+          const pasoId = `${baseId}-paso-${indice + 1}`;
+          return (
+            <section
+              id={pasoId}
+              data-step-panel
+              data-index={indice + 1}
+              role="group"
+              aria-roledescription="paso"
+              aria-labelledby={`${pasoId}-titulo`}
+              class="rounded-xl border border-white/10 bg-[#0d0d16] p-4 sm:p-5 print:block"
+            >
+              <div class="flex items-center gap-2">
+                <span
+                  class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-400/10 font-mono text-xs text-emerald-300"
+                  aria-hidden="true"
+                >
+                  {indice + 1}
+                </span>
+                <h3
+                  id={`${pasoId}-titulo`}
+                  class="text-sm font-semibold text-zinc-200"
+                >
+                  {paso.titulo}
+                </h3>
+              </div>
+
+              <p class="mt-3 text-sm leading-relaxed text-zinc-300">
+                {paso.idea}
+              </p>
+
+              {paso.formula && (
+                <div
+                  class="mt-3 overflow-x-auto rounded-lg border border-white/5 bg-black/20 px-3 py-2 text-zinc-200 [&_.katex-display]:my-0"
+                  set:html={renderFormula(paso.formula)}
+                />
+              )}
+
+              {paso.codigo && (
+                <pre class="mt-3 overflow-x-auto rounded-lg border border-white/10 bg-black/30 p-3 font-mono text-[11px] leading-relaxed text-emerald-200"><code>{paso.codigo}</code></pre>
+              )}
+
+              {paso.nota && (
+                <p class="mt-3 text-xs leading-relaxed text-zinc-500">
+                  {paso.nota}
+                </p>
+              )}
+            </section>
+          );
+        })
+      }
+    </div>
+
+    <div
+      data-nav
+      class="mt-4 hidden items-center justify-between gap-3 border-t border-white/10 pt-4 print:hidden"
+    >
+      <button
+        type="button"
+        data-prev
+        aria-label="Paso anterior"
+        class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-300 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d0d16] disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <Icon name="chevron" class="h-4 w-4 rotate-180" />
+      </button>
+
+      <div
+        class="flex items-center gap-1.5"
+        role="group"
+        aria-label="Ir a un paso"
+      >
+        {
+          infografia.pasos.map((paso, indice) => (
+            <button
+              type="button"
+              data-dot
+              data-index={indice + 1}
+              aria-label={`Ir al paso ${indice + 1}: ${paso.titulo}`}
+              aria-current={indice === 0 ? "step" : "false"}
+              aria-controls={`${baseId}-paso-${indice + 1}`}
+              class={`h-2.5 rounded-full transition-all hover:bg-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d0d16] ${
+                indice === 0 ? "w-6 bg-amber-400" : "w-2.5 bg-white/20"
+              }`}
+            />
+          ))
+        }
+      </div>
+
+      <button
+        type="button"
+        data-next
+        aria-label="Paso siguiente"
+        class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-300 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d0d16] disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <Icon name="chevron" class="h-4 w-4" />
+      </button>
+    </div>
+
+    <p data-live class="sr-only" aria-live="polite" aria-atomic="true"></p>
+  </div>
+
+  <div class="mx-3 mb-4 rounded-xl border border-white/10 bg-[#0d0d16] p-4 sm:mx-6">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+        En informática
+      </p>
+      <p class="font-mono text-[11px] text-zinc-600">{total} pasos</p>
+    </div>
+    <ul class="mt-2 flex flex-wrap gap-2">
+      {
+        infografia.aplicaciones.map((aplicacion) => (
+          <li class="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-zinc-300">
+            {aplicacion}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-3 text-center text-[11px] text-zinc-500">
+      {infografia.cierre}
+    </p>
+  </div>
+</figure>
+
+<script>
+  function setupInfografia(root: HTMLElement): void {
+    if (root.dataset.ready === "1") return;
+
+    const panels = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-step-panel]"),
+    );
+    if (panels.length === 0) return;
+
+    root.dataset.ready = "1";
+
+    const total = panels.length;
+    let current = 1;
+
+    const counter = root.querySelector<HTMLElement>("[data-counter]");
+    const progress = root.querySelector<HTMLElement>("[data-progress]");
+    const progressTrack = root.querySelector<HTMLElement>(
+      "[data-progress-track]",
+    );
+    const nav = root.querySelector<HTMLElement>("[data-nav]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-next]");
+    const dots = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-dot]"));
+    const live = root.querySelector<HTMLElement>("[data-live]");
+
+    counter?.classList.remove("hidden");
+    progressTrack?.classList.remove("hidden");
+    if (nav) {
+      nav.classList.remove("hidden");
+      nav.classList.add("flex");
+    }
+
+    const show = (step: number): void => {
+      current = Math.min(Math.max(step, 1), total);
+
+      panels.forEach((panel, index) => {
+        panel.hidden = index + 1 !== current;
+      });
+
+      dots.forEach((dot, index) => {
+        const active = index + 1 === current;
+        dot.setAttribute("aria-current", active ? "step" : "false");
+        dot.classList.toggle("w-6", active);
+        dot.classList.toggle("bg-amber-400", active);
+        dot.classList.toggle("w-2.5", !active);
+        dot.classList.toggle("bg-white/20", !active);
+      });
+
+      if (counter) counter.textContent = `${current} / ${total}`;
+      if (progress) progress.style.width = `${(current / total) * 100}%`;
+      if (prev) prev.disabled = current === 1;
+      if (next) next.disabled = current === total;
+
+      if (live) {
+        const panelActual = panels[current - 1];
+        const titulo =
+          panelActual?.querySelector("h3")?.textContent?.trim() ?? "";
+        live.textContent = `Paso ${current} de ${total}: ${titulo}`;
+      }
+    };
+
+    prev?.addEventListener("click", () => show(current - 1));
+    next?.addEventListener("click", () => show(current + 1));
+    dots.forEach((dot, index) => {
+      dot.addEventListener("click", () => show(index + 1));
+    });
+
+    root.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        show(current - 1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        show(current + 1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        show(1);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        show(total);
+      }
+    });
+
+    show(1);
+  }
+
+  function initInfografias(): void {
+    document
+      .querySelectorAll<HTMLElement>("[data-infografia]")
+      .forEach(setupInfografia);
+  }
+
+  initInfografias();
+  document.addEventListener("astro:page-load", initInfografias);
+</script>

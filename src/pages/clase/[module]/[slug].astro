@@ -2,6 +2,8 @@
 import { getCollection, render } from "astro:content";
 import LessonLayout from "../../../layouts/LessonLayout.astro";
 import { modules } from "../../../data/modules.ts";
+import { infografias } from "../../../data/infografias.ts";
+import Infografia from "../../../components/Infografia/Infografia.astro";
 
 export async function getStaticPaths() {
   const lessons = await getCollection("lessons");
@@ -13,6 +15,11 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+
+const infografia =
+  entry.data.slug.startsWith("infografia-")
+    ? infografias[entry.data.module]
+    : undefined;
 
 const modulePosition = new Map(modules.map((m, i) => [m.id, i]));
 const ordered = (await getCollection("lessons")).sort((a, b) => {
@@ -44,4 +51,5 @@ const toLink = (e: { data: { title: string; module: string; slug: string } }) =>
   next={nextEntry ? toLink(nextEntry) : undefined}
 >
   <Content />
+  {infografia && <Infografia infografia={infografia} />}
 </LessonLayout>
