@@ -1,0 +1,256 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header/Header.astro";
+import Footer from "../components/Footer/Footer.astro";
+import Icon from "../components/icons/Icon.astro";
+import { construirNotasPayload } from "../lib/notas-build.ts";
+
+const payload = await construirNotasPayload();
+const notasData = JSON.stringify(payload);
+---
+
+<BaseLayout
+  title="Notas — Aprende Matrices"
+  description="Consulta tus notas y los temas a recuperar del grupo 2MF con tu cédula."
+>
+  <Header />
+  <main id="main-content">
+    <section
+      class="mx-auto max-w-2xl px-4 py-16 sm:py-20"
+      aria-labelledby="notas-title"
+    >
+      <h1
+        id="notas-title"
+        class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl"
+      >
+        Consulta de notas
+      </h1>
+      <p class="mt-4 text-zinc-400">
+        Escritos y parciales del año (actualizado el {payload.fecha}).
+        Escribí tu cédula sin puntos ni guiones para ver tus notas y los
+        temas que debés recuperar.
+      </p>
+
+      <form data-notas-form class="mt-8 flex flex-col gap-3 sm:flex-row" novalidate>
+        <div class="flex-1">
+          <label for="notas-ci" class="mb-1.5 block text-sm font-medium text-zinc-300">
+            Cédula de identidad
+          </label>
+          <input
+            id="notas-ci"
+            data-notas-ci
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="Ej. 12345678"
+            class="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-base text-white placeholder:text-zinc-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+          />
+        </div>
+        <button
+          data-notas-submit
+          type="submit"
+          class="inline-flex shrink-0 items-center justify-center gap-2 self-end rounded-lg bg-amber-400 px-5 py-2.5 text-sm font-semibold text-black hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <Icon name="search" class="h-4 w-4" />
+          Consultar
+        </button>
+      </form>
+
+      <div data-notas-result aria-live="polite" class="mt-8"></div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script type="application/json" data-notas-data is:inline set:html={notasData} />
+
+<script>
+  import { buscarAlumno, ciValida, type AlumnoNotas } from "../lib/notas.ts";
+
+  interface NotasData {
+    fecha: string;
+    registros: string[];
+  }
+
+  // Se reconsultan el DOM y los datos en cada uso: sobre `document` el
+  // handler sobrevive a los cambios de página del ClientRouter, y el
+  // módulo solo se ejecuta una vez por sesión.
+  const notas: NotasData = { fecha: "", registros: [] };
+
+  function dataActualizada(): NotasData | null {
+    const dataEl = document.querySelector("[data-notas-data]");
+    if (!dataEl) return null;
+    try {
+      return JSON.parse(dataEl.textContent ?? "{}") as NotasData;
+    } catch {
+      return null;
+    }
+  }
+
+  function element(
+    tag: string,
+    className: string,
+    text?: string,
+  ): HTMLElement {
+    const el = document.createElement(tag);
+    el.className = className;
+    if (text !== undefined) el.textContent = text;
+    return el;
+  }
+
+  function notaTexto(valor: string | null, comentario: string | null): string {
+    return valor ?? comentario ?? "Sin registro";
+  }
+
+  function renderMensaje(texto: string): void {
+    const result = document.querySelector("[data-notas-result]");
+    if (!(result instanceof HTMLElement)) return;
+    result.replaceChildren(
+      element(
+        "p",
+        "rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300",
+        texto,
+      ),
+    );
+  }
+
+  function renderAlumno(alumno: AlumnoNotas, fecha: string): void {
+    const result = document.querySelector("[data-notas-result]");
+    if (!(result instanceof HTMLElement)) return;
+
+    const card = element(
+      "article",
+      "rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6",
+    );
+    const titulo = element("h2", "text-xl font-bold text-white", alumno.nombre);
+    titulo.tabIndex = -1;
+    card.append(
+      titulo,
+      element("p", "mt-1 text-xs text-zinc-500", `Notas actualizadas el ${fecha}`),
+    );
+
+    const tabla = element("table", "mt-5 w-full text-left text-sm");
+    const encabezado = document.createElement("tr");
+    for (const columna of ["Prueba", "Fecha", "Nota"]) {
+      encabezado.appendChild(
+        element(
+          "th",
+          "border-b border-white/10 pb-2 pr-4 text-xs font-semibold uppercase tracking-wide text-zinc-500",
+          columna,
+        ),
+      );
+    }
+    const thead = document.createElement("thead");
+    thead.appendChild(encabezado);
+    tabla.appendChild(thead);
+
+    const cuerpo = document.createElement("tbody");
+    for (const prueba of alumno.pruebas) {
+      const fila = document.createElement("tr");
+      fila.className = "border-b border-white/5";
+      fila.appendChild(
+        element(
+          "td",
+          "py-2.5 pr-4 font-medium text-zinc-200",
+          `${prueba.periodo} · ${prueba.tipo}`,
+        ),
+      );
+      fila.appendChild(
+        element("td", "py-2.5 pr-4 text-zinc-400", prueba.fecha),
+      );
+      const pendiente = prueba.valor === null;
+      fila.appendChild(
+        element(
+          "td",
+          pendiente
+            ? "py-2.5 pr-4 italic text-red-300"
+            : "py-2.5 pr-4 font-semibold text-white",
+          notaTexto(prueba.valor, prueba.comentario),
+        ),
+      );
+      cuerpo.appendChild(fila);
+    }
+    tabla.appendChild(cuerpo);
+    card.appendChild(element("div", "overflow-x-auto")).appendChild(tabla);
+
+    if (alumno.recuperar.length > 0) {
+      const temas = element("div", "mt-5 flex flex-wrap gap-2");
+      for (const tema of alumno.recuperar) {
+        temas.appendChild(
+          element(
+            "span",
+            "rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-300",
+            tema,
+          ),
+        );
+      }
+      card.appendChild(temas);
+    } else {
+      card.appendChild(
+        element("p", "mt-5 text-sm text-zinc-500", "Sin recuperación pendiente"),
+      );
+    }
+
+    result.replaceChildren(card);
+    titulo.focus();
+  }
+
+  async function consultar(): Promise<void> {
+    const input = document.querySelector("[data-notas-ci]");
+    const submit = document.querySelector("[data-notas-submit]");
+    if (
+      !(input instanceof HTMLInputElement) ||
+      !(submit instanceof HTMLButtonElement)
+    ) {
+      return;
+    }
+
+    const ci = input.value;
+    if (!ciValida(ci.replace(/\D/g, ""))) {
+      renderMensaje("Escribí tu cédula con 7 u 8 dígitos, sin puntos ni guiones.");
+      input.focus();
+      return;
+    }
+
+    submit.disabled = true;
+    try {
+      const alumno = await buscarAlumno(notas.registros, ci);
+      if (alumno === null) {
+        renderMensaje(
+          "No encontramos esa cédula en el grupo. Revisá los números e intentá de nuevo.",
+        );
+      } else {
+        renderAlumno(alumno, notas.fecha);
+      }
+    } finally {
+      submit.disabled = false;
+    }
+  }
+
+  // Fase de captura: corre ANTES que el listener "submit" del ClientRouter
+  // de Astro (registrado en fase burbuja), que por su cuenta intercepta el
+  // envío y navega por view transitions, borrando la consulta renderizada.
+  // Al prevenir el default aquí, el router ve defaultPrevented y no actúa.
+  document.addEventListener(
+    "submit",
+    (event) => {
+      const origen = event.target;
+      if (
+        origen instanceof HTMLFormElement &&
+        origen.matches("[data-notas-form]")
+      ) {
+        event.preventDefault();
+        void consultar();
+      }
+    },
+    true,
+  );
+
+  document.addEventListener("astro:page-load", () => {
+    const data = dataActualizada();
+    if (data) {
+      notas.fecha = data.fecha;
+      notas.registros = data.registros;
+    }
+  });
+</script>

@@ -39,7 +39,7 @@ const continuePayload: string = JSON.stringify(continueIndex);
   </ul>
   <div
     class="mt-7 flex flex-wrap items-center justify-center gap-2.5"
-    aria-label="Descargar material en PDF"
+    aria-label="Material del curso y consulta de notas"
   >
     <a
       href="/teoria-matrices.pdf"
@@ -64,6 +64,15 @@ const continuePayload: string = JSON.stringify(continueIndex);
     >
       <Icon name="matrix" class="h-4 w-4" />
       Abrir calculadora
+    </a>
+
+    <a
+      href="/notas"
+      data-astro-prefetch
+      class="inline-flex items-center justify-center text-center gap-1.5 rounded-full border border-amber-400/50 bg-amber-400/10 px-4 py-1.5 text-sm font-semibold text-amber-300 hover:bg-amber-400/20 hover:text-amber-200"
+    >
+      <Icon name="notes" class="h-4 w-4" />
+      Ver notas
     </a>
   </div>
   <p class="mt-6">
