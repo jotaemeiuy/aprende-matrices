@@ -2,8 +2,10 @@
 import Icon from "../icons/Icon.astro";
 import { buildSearchIndex } from "../../lib/search.ts";
 import type { SearchEntry } from "../../lib/search.ts";
+import { getCollection } from "astro:content";
 
-const entries: SearchEntry[] = buildSearchIndex();
+const lessons = await getCollection("lessons");
+const entries: SearchEntry[] = buildSearchIndex(lessons);
 const payload: string = JSON.stringify(entries);
 ---
 <div
@@ -90,14 +92,13 @@ const payload: string = JSON.stringify(entries);
   function render(query: string): void {
     if (!(list instanceof HTMLElement)) return;
     const q = query.trim().toLowerCase();
-    const found = items
-      .filter(
-        (e: SearchEntry): boolean =>
-          q === "" ||
-          e.title.toLowerCase().includes(q) ||
-          e.moduleTitle.toLowerCase().includes(q),
-      )
-      .slice(0, 40);
+    const found = items.filter(
+      (e: SearchEntry): boolean =>
+        q === "" ||
+        e.title.toLowerCase().includes(q) ||
+        e.moduleTitle.toLowerCase().includes(q) ||
+        e.description.toLowerCase().includes(q),
+    );
     if (found.length === 0) {
       flatIds = [];
       list.innerHTML =
