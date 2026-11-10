@@ -407,7 +407,11 @@ for (int i = 0; i < n; i++)
   },
 };
 
-const faltantes = modules.filter((modulo) => !(modulo.id in infografias));
+const faltantes = modules.filter(
+  (modulo) =>
+    modulo.lessons.some((lesson) => lesson.slug.startsWith("infografia-")) &&
+    !(modulo.id in infografias),
+);
 
 if (faltantes.length > 0) {
   throw new Error(

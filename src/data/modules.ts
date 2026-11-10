@@ -167,4 +167,17 @@ export const modules: Module[] = [
       { slug: "infografia-resumen", title: "Infografía: determinantes y Cramer", kind: "teoria" },
     ],
   },
+  {
+    id: "practica-parcial",
+    number: "12",
+    title: "Práctica para el Parcial",
+    description: "4 pruebas con sus soluciones en PDF para preparar el parcial.",
+    icon: "parcial",
+    lessons: [
+      { slug: "prueba-1", title: "Prueba 1", kind: "practica" },
+      { slug: "prueba-2", title: "Prueba 2", kind: "practica" },
+      { slug: "prueba-3", title: "Prueba 3", kind: "practica" },
+      { slug: "prueba-4", title: "Prueba 4", kind: "practica" },
+    ],
+  },
 ];
