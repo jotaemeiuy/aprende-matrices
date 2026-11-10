@@ -3,10 +3,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header/Header.astro";
 import Footer from "../components/Footer/Footer.astro";
 import Icon from "../components/icons/Icon.astro";
-import { construirNotasPayload } from "../lib/notas-build.ts";
+import notasPayload from "../data/notas-payload.json";
 
-const payload = await construirNotasPayload();
-const notasData = JSON.stringify(payload);
+// Payload cifrado por pnpm notas:sync: solo blobs ilegibles + fecha.
+const notasData = JSON.stringify(notasPayload);
 ---
 
 <BaseLayout
@@ -26,7 +26,7 @@ const notasData = JSON.stringify(payload);
         Consulta de notas
       </h1>
       <p class="mt-4 text-zinc-400">
-        Escritos y parciales del año (actualizado el {payload.fecha}).
+        Escritos y parciales del año (actualizado el {notasPayload.fecha}).
         Escribí tu cédula sin puntos ni guiones para ver tus notas y los
         temas que debés recuperar.
       </p>

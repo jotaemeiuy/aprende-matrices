@@ -9,4 +9,7 @@ imagenes/
 
 # Agente (instrucciones locales, no se suben)
 AGENTS.md
+
+# Datos en claro del grupo: NO se suben. Para actualizar notas:
+# correr `pnpm notas:sync` (genera src/data/notas-payload.json cifrado)
 listado/
